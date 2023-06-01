@@ -73,7 +73,8 @@ typedef int32_t i32;
 #define EXT2_DEF_RESUID			0
 #define EXT2_DEF_RESGID			0
 #define EXT2_VALID_FS			1
-#define MAX_I16 		 		0x7FFF
+// #define MAX_I16 		 		0x7FFF
+#define INFINITE_MAX 			-1
 #define CHK_INTERVAL			1
 
 
@@ -220,7 +221,7 @@ void write_superblock(int fd) {
 	superblock.s_mtime             = 0; /* Mount time */
 	superblock.s_wtime             = current_time; /* Write time */
 	superblock.s_mnt_count         = 0; /* Number of times mounted so far */
-	superblock.s_max_mnt_count     = MAX_I16; /* Make this unlimited */
+	superblock.s_max_mnt_count     = INFINITE_MAX; /* Make this unlimited */
 	superblock.s_magic             = EXT2_SUPER_MAGIC; /* ext2 Signature */
 	superblock.s_state             = EXT2_VALID_FS; /* File system is clean */
 	superblock.s_errors            = EXT2_ERRORS_CONTINUE; /* Ignore the error (continue on) */
@@ -269,9 +270,9 @@ void write_block_group_descriptor_table(int fd) {
 
 	/* These are intentionally incorrectly set as 0, you should set them
 	   correctly and delete this comment */
-	block_group_descriptor.bg_block_bitmap = 0;
-	block_group_descriptor.bg_inode_bitmap = 0;
-	block_group_descriptor.bg_inode_table = 0;
+	block_group_descriptor.bg_block_bitmap = BLOCK_BITMAP_BLOCKNO;
+	block_group_descriptor.bg_inode_bitmap = INODE_BITMAP_BLOCKNO;
+	block_group_descriptor.bg_inode_table = INODE_TABLE_BLOCKNO;
 	block_group_descriptor.bg_free_blocks_count = 0;
 	block_group_descriptor.bg_free_inodes_count = 0;
 	block_group_descriptor.bg_used_dirs_count = 0;
