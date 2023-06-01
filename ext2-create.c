@@ -67,6 +67,16 @@ typedef int32_t i32;
 #define EXT2_S_IWOTH  0x0002
 #define EXT2_S_IXOTH  0x0001
 
+#define EXT2_SUPER_MAGIC 		0xEF53
+#define EXT2_ERRORS_CONTINUE	1
+#define EXT2_OS_LINUX			0
+#define EXT2_DEF_RESUID			0
+#define EXT2_DEF_RESGID			0
+#define EXT2_VALID_FS			1
+#define MAX_I16 		 		0x7FFF
+#define CHK_INTERVAL			1
+
+
 #define	EXT2_NDIR_BLOCKS 12
 #define	EXT2_IND_BLOCK   EXT2_NDIR_BLOCKS
 #define	EXT2_DIND_BLOCK  (EXT2_IND_BLOCK + 1)
@@ -196,31 +206,31 @@ void write_superblock(int fd) {
 
 	/* These are intentionally incorrectly set as 0, you should set them
 	   correctly and delete this comment */
-	superblock.s_inodes_count      = 0;
-	superblock.s_blocks_count      = 0;
+	superblock.s_inodes_count      = NUM_INODES;
+	superblock.s_blocks_count      = NUM_BLOCKS;
 	superblock.s_r_blocks_count    = 0;
-	superblock.s_free_blocks_count = 0;
-	superblock.s_free_inodes_count = 0;
-	superblock.s_first_data_block  = 0; /* First Data Block */
+	superblock.s_free_blocks_count = NUM_FREE_BLOCKS;
+	superblock.s_free_inodes_count = NUM_FREE_INODES;
+	superblock.s_first_data_block  = SUPERBLOCK_BLOCKNO; /* First Data Block */
 	superblock.s_log_block_size    = 0; /* 1024 */
 	superblock.s_log_frag_size     = 0; /* 1024 */
-	superblock.s_blocks_per_group  = 0;
-	superblock.s_frags_per_group   = 0;
-	superblock.s_inodes_per_group  = 0;
+	superblock.s_blocks_per_group  = BLOCK_SIZE * 8;
+	superblock.s_frags_per_group   = BLOCK_SIZE * 8;
+	superblock.s_inodes_per_group  = NUM_INODES;
 	superblock.s_mtime             = 0; /* Mount time */
-	superblock.s_wtime             = 0; /* Write time */
+	superblock.s_wtime             = current_time; /* Write time */
 	superblock.s_mnt_count         = 0; /* Number of times mounted so far */
-	superblock.s_max_mnt_count     = 0; /* Make this unlimited */
-	superblock.s_magic             = 0; /* ext2 Signature */
-	superblock.s_state             = 0; /* File system is clean */
-	superblock.s_errors            = 0; /* Ignore the error (continue on) */
+	superblock.s_max_mnt_count     = MAX_I16; /* Make this unlimited */
+	superblock.s_magic             = EXT2_SUPER_MAGIC; /* ext2 Signature */
+	superblock.s_state             = EXT2_VALID_FS; /* File system is clean */
+	superblock.s_errors            = EXT2_ERRORS_CONTINUE; /* Ignore the error (continue on) */
 	superblock.s_minor_rev_level   = 0; /* Leave this as 0 */
-	superblock.s_lastcheck         = 0; /* Last check time */
-	superblock.s_checkinterval     = 0; /* Force checks by making them every 1 second */
-	superblock.s_creator_os        = 0; /* Linux */
+	superblock.s_lastcheck         = current_time; /* Last check time */
+	superblock.s_checkinterval     = CHK_INTERVAL; /* Force checks by making them every 1 second */
+	superblock.s_creator_os        = EXT2_OS_LINUX; /* Linux */
 	superblock.s_rev_level         = 0; /* Leave this as 0 */
-	superblock.s_def_resuid        = 0; /* root */
-	superblock.s_def_resgid        = 0; /* root */
+	superblock.s_def_resuid        = EXT2_DEF_RESUID; /* root */
+	superblock.s_def_resgid        = EXT2_DEF_RESGID; /* root */
 
 	/* You can leave everything below this line the same, delete this
 	   comment when you're done the lab */
